@@ -1,0 +1,190 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #0B3D91;
+  --secondary: #3BA7F2;
+  --accent: #7FE7D6;
+  --background: #E8F6FF;
+  --text-light: #1a1a1a;
+  --text-dark: #ffffff;
+}
+
+html.dark {
+  --primary: #0B3D91;
+  --secondary: #3BA7F2;
+  --accent: #7FE7D6;
+  --background: #0f1419;
+  --text-light: #ffffff;
+  --text-dark: #1a1a1a;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(135deg, #E8F6FF 0%, #D6E8FF 100%);
+  color: var(--text-light);
+  transition: background 0.5s ease;
+}
+
+html.dark body {
+  background: linear-gradient(135deg, #0f1419 0%, #1a2332 100%);
+  color: var(--text-light);
+}
+
+/* Glass Morphism */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+}
+
+html.dark .glass {
+  background: rgba(15, 20, 25, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(59, 167, 242, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.glass-light {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+html.dark .glass-light {
+  background: rgba(45, 58, 77, 0.4);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(59, 167, 242, 0.08);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 20px;
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.12);
+  transition: all 0.3s ease;
+}
+
+html.dark .glass-card {
+  background: rgba(26, 35, 50, 0.7);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(59, 167, 242, 0.12);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(59, 167, 242, 0.2);
+  box-shadow: 0 16px 48px 0 rgba(31, 38, 135, 0.2);
+}
+
+html.dark .glass-card:hover {
+  background: rgba(45, 58, 77, 0.8);
+  border: 1px solid rgba(59, 167, 242, 0.2);
+  box-shadow: 0 16px 48px 0 rgba(59, 167, 242, 0.1);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(59, 167, 242, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 167, 242, 0.8);
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: rgba(59, 167, 242, 0.3);
+}
+
+/* Focus Styles */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes wave {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

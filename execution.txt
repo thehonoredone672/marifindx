@@ -1,0 +1,10 @@
+# Development
+npm run dev          # Start dev server (http://localhost:5173)
+
+# Build
+npm run build        # Production build
+npm run preview      # Preview production build locally
+
+# Recommended: Full setup
+npm install
+npm run dev

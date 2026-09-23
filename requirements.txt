@@ -1,0 +1,43 @@
+# MariFindX — Python dependencies
+# Tested on Python 3.14 / Windows with PyTorch 2.13.0+cpu.
+
+# --- deep learning -------------------------------------------------
+# CPU wheels come from PyPI. For CUDA, install from the PyTorch index
+# instead, e.g.:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
+torch>=2.2
+torchvision>=0.17
+
+# --- numerics / imaging ---------------------------------------------
+numpy>=1.26
+scipy>=1.11
+opencv-python>=4.8
+tifffile>=2023.7
+Pillow>=10.0
+
+# --- geospatial ------------------------------------------------------
+rasterio>=1.3
+shapely>=2.0
+pyproj>=3.6
+
+# --- data -------------------------------------------------------------
+pandas>=2.0
+PyYAML>=6.0
+
+# --- API --------------------------------------------------------------
+fastapi>=0.110
+uvicorn[standard]>=0.27
+python-multipart>=0.0.9
+
+# --- reporting / plots -------------------------------------------------
+matplotlib>=3.7
+scikit-learn>=1.3
+
+# --- optional ----------------------------------------------------------
+# XGBoost powers the optional learned vessel ranker. The rule-based
+# correlation engine works without it.
+# xgboost>=2.0
+# shap>=0.44
+# ONNX export (ml/export_onnx.py)
+# onnx>=1.15
+# onnxruntime>=1.17

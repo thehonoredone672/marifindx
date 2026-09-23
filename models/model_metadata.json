@@ -1,0 +1,160 @@
+{
+  "model_name": "marifindx_oil_segmentation",
+  "created_utc": "2026-09-23T10:32:15.214005+00:00",
+  "training_mode": "quick",
+  "architecture": {
+    "architecture": "attention_unet",
+    "encoder": "plain",
+    "in_channels": 2,
+    "parameters": 6125509,
+    "first_conv_adapted_from_rgb": false,
+    "channel_duplication_used": false
+  },
+  "patch_size": 256,
+  "channels": [
+    "VV",
+    "VH"
+  ],
+  "device": "cpu",
+  "epochs_run": 8,
+  "best_epoch": 2,
+  "validation_metrics": {
+    "best_dice": 0.5581906327965525,
+    "best_iou": 0.38714593308491707,
+    "best_loss": 0.5434225093234669
+  },
+  "test_metrics": {
+    "global": {
+      "iou": 0.22450528202010414,
+      "dice": 0.36668732314446345,
+      "precision": 0.2262083513730114,
+      "recall": 0.9675531914893617,
+      "f1": 0.36668732314446345,
+      "false_positive_rate": 0.035991226762231376,
+      "false_negative_rate": 0.032446808510638296,
+      "tp": 49113.0,
+      "fp": 168001.0,
+      "fn": 1647.0,
+      "tn": 4499831.0
+    },
+    "per_class": {
+      "oil": {
+        "iou": 0.9352541275493688,
+        "dice": 0.9665439946470391,
+        "precision": 0.9655369008768135,
+        "recall": 0.9675531914893617,
+        "f1": 0.9665439946470392,
+        "false_positive_rate": 0.0011516952849476778,
+        "false_negative_rate": 0.032446808510638296,
+        "tp": 49113.0,
+        "fp": 1753.0,
+        "fn": 1647.0,
+        "tn": 1520351.0
+      },
+      "lookalike": {
+        "iou": 0.0,
+        "dice": 0.0,
+        "precision": 0.0,
+        "recall": NaN,
+        "f1": NaN,
+        "false_positive_rate": 0.1056976318359375,
+        "false_negative_rate": NaN,
+        "tp": 0.0,
+        "fp": 166248.0,
+        "fn": 0.0,
+        "tn": 1406616.0
+      },
+      "nooil": {
+        "iou": NaN,
+        "dice": NaN,
+        "precision": NaN,
+        "recall": NaN,
+        "f1": NaN,
+        "false_positive_rate": 0.0,
+        "false_negative_rate": NaN,
+        "tp": 0.0,
+        "fp": 0.0,
+        "fn": 0.0,
+        "tn": 1572864.0
+      }
+    },
+    "detection": {
+      "scenes": 18,
+      "sensitivity": 1.0,
+      "specificity": 0.5,
+      "false_positive_rate": 0.5,
+      "false_negative_rate": 0.0,
+      "confusion_matrix": {
+        "tp": 6.0,
+        "fp": 6.0,
+        "fn": 0.0,
+        "tn": 6.0
+      },
+      "lookalike_false_alarm_rate": 1.0,
+      "nooil_false_alarm_rate": 0.0,
+      "oil_detection_rate": 1.0
+    }
+  },
+  "train_images": {
+    "total": 45,
+    "per_scenario": {
+      "lookalike": 13,
+      "nooil": 13,
+      "oil": 19
+    }
+  },
+  "val_images": {
+    "total": 11,
+    "per_scenario": {
+      "lookalike": 3,
+      "nooil": 3,
+      "oil": 5
+    }
+  },
+  "config": {
+    "loss": {
+      "mode": "hybrid",
+      "dice_weight": 0.5,
+      "bce_weight": 0.3,
+      "focal_weight": 0.2,
+      "focal_gamma": 2.0,
+      "focal_alpha": 0.25,
+      "bce_pos_weight": 3.0,
+      "tversky_alpha": 0.3,
+      "tversky_beta": 0.7,
+      "smooth": 1.0
+    },
+    "training": {
+      "epochs": 20,
+      "batch_size": 8,
+      "cpu_batch_size": 2,
+      "num_workers": 4,
+      "cpu_num_workers": 0,
+      "learning_rate": 0.0003,
+      "weight_decay": 0.0001,
+      "optimizer": "adamw",
+      "scheduler": "cosine",
+      "warmup_epochs": 1,
+      "amp": true,
+      "grad_clip": 1.0,
+      "early_stopping": {
+        "enabled": true,
+        "patience": 6,
+        "monitor": "val_dice"
+      },
+      "seed": 1337
+    },
+    "patch": {
+      "enabled": true,
+      "size": 256,
+      "stride": 256,
+      "test_stride": 256,
+      "min_valid_fraction": 0.1,
+      "negative_patch_keep": 0.35
+    }
+  },
+  "data_provenance": {
+    "synthetic": true,
+    "warning": "Trained on SYNTHETIC pipeline-validation scenes, not real Sentinel-1 data. These metrics demonstrate that the training code runs correctly; they are NOT oil-spill detection performance figures."
+  }
+}

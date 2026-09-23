@@ -1,0 +1,1162 @@
+BUILD A COMPLETELY NEW PROJECT FROM SCRATCH
+
+PROJECT NAME:
+MariFindX
+
+FULL TITLE:
+AI-Powered Marine Oil Spill Detection & Vessel Attribution System
+
+SIH PROBLEM:
+SIH26143 — Leveraging satellite imagery to determine oil spills at sea along with AIS data correlations to identify vessel responsible for the spill.
+
+IMPORTANT:
+This is a NEW PROJECT.
+Do not reuse, modify, import, or depend on any previous project.
+Do not assume any existing files, components, packages, routes, APIs, database or environment variables exist.
+
+The FIRST PRIORITY is:
+1. Application must start successfully.
+2. No build errors.
+3. No missing imports.
+4. No broken routes.
+5. No blank screens.
+6. No console errors.
+7. Every visible button must either work or clearly indicate its current prototype state.
+8. The project must remain functional even without a backend or external API.
+
+========================================================
+1. CORE PRODUCT
+========================================================
+
+Create a premium maritime intelligence platform called:
+
+MARIFindX
+
+Core concept:
+
+Satellite Detection
+→ Oil Spill Segmentation
+→ Spill Geometry
+→ 3D Drift Projection
+→ Probable Origin
+→ AIS Vessel Tracking
+→ Vessel Correlation
+→ Explainable Ranking
+→ Investigation Dashboard
+
+The system is a decision-support prototype.
+
+Never use wording such as:
+"Confirmed Culprit"
+"Guilty Vessel"
+"Proven Responsibility"
+
+Use:
+"Potential Oil Spill"
+"Probable Origin"
+"Most Likely Associated Vessel"
+"Correlation Score"
+"Investigation Evidence"
+
+========================================================
+2. DEVELOPMENT STRATEGY
+========================================================
+
+BUILD IN STAGES.
+
+STAGE 1:
+Create the complete frontend and make it run successfully using local mock data.
+
+STAGE 2:
+Implement all interactions and visualizations.
+
+STAGE 3:
+Add the 3D projection and analysis.
+
+STAGE 4:
+Create an API abstraction layer so real Sentinel-1/AIS/ocean data can later replace mock data.
+
+DO NOT make the application dependent on external APIs for initial startup.
+
+The command:
+
+npm install
+npm run dev
+
+must be sufficient to start the frontend.
+
+If backend functionality is added later, it must be optional and must NOT break frontend startup.
+
+========================================================
+3. TECHNOLOGY STACK
+========================================================
+
+Frontend:
+- React
+- Vite
+- JavaScript or TypeScript
+- Tailwind CSS
+
+Animation:
+- Framer Motion
+
+3D:
+- Three.js
+- @react-three/fiber
+- @react-three/drei
+
+2D Mapping:
+- Leaflet
+- React Leaflet
+- OpenStreetMap
+
+Charts:
+- Recharts
+
+Icons:
+- Lucide React
+
+State:
+- React Context or Zustand
+
+Use only stable, compatible package versions.
+
+Do not add unnecessary libraries.
+
+========================================================
+4. UI DESIGN — LIQUID GLASS
+========================================================
+
+The ENTIRE UI must use a premium:
+
+LIQUID GLASS UI
+
+style.
+
+Visual language:
+
+- translucent glass panels
+- layered depth
+- soft blur
+- subtle backdrop-filter
+- translucent navigation
+- frosted cards
+- soft borders
+- realistic reflections
+- depth shadows
+- subtle inner highlights
+- smooth hover states
+- smooth glass morphing transitions
+
+Do NOT make it:
+- cyberpunk
+- excessively neon
+- overly futuristic
+- cluttered
+- generic dashboard UI
+
+The design should feel like:
+"Apple-level liquid glass + maritime intelligence workstation"
+
+Use glass effects carefully so text remains readable.
+
+========================================================
+5. LIGHT / DARK MODE
+========================================================
+
+Implement a FULL light/dark theme system.
+
+Add a theme switcher in the navbar.
+
+The theme must affect:
+- background
+- glass surfaces
+- text
+- cards
+- borders
+- map overlays
+- 3D scene
+- charts
+- buttons
+- modals
+- navigation
+
+Persist the selected theme using localStorage.
+
+Respect system theme on first launch.
+
+Light mode:
+- bright marine atmosphere
+- translucent white/blue glass
+- ocean-inspired background
+
+Dark mode:
+- deep navy ocean atmosphere
+- blue/teal highlights
+- dark translucent glass
+
+The UI must remain accessible and readable in both modes.
+
+========================================================
+6. COLOR SYSTEM
+========================================================
+
+Primary:
+#0B3D91
+
+Secondary:
+#3BA7F2
+
+Accent:
+#7FE7D6
+
+Background:
+#E8F6FF
+
+Use these as the core palette.
+
+Light mode should use:
+#E8F6FF + white glass surfaces
+
+Dark mode should use:
+deep navy/near-black derived tones while retaining:
+#0B3D91
+#3BA7F2
+#7FE7D6
+
+Avoid introducing large numbers of unrelated colors.
+
+========================================================
+7. LANDING PAGE
+========================================================
+
+Create a cinematic professional landing page.
+
+HERO SECTION:
+
+Headline:
+"See the Spill. Trace the Source."
+
+Subheading:
+"MariFindX combines satellite intelligence, ocean-drift analysis and AIS vessel trajectories to support explainable marine oil-spill investigations."
+
+Primary CTA:
+"Explore Intelligence"
+
+Secondary CTA:
+"View Investigation"
+
+--------------------------------------------------------
+LANDING PAGE HERO IMAGE
+--------------------------------------------------------
+
+Use a high-quality realistic ocean/satellite/ocean-surface image related to maritime monitoring.
+
+Use a royalty-free ocean image from a reliable source such as Unsplash or Pexels during development.
+
+IMPORTANT:
+Do not depend on an unstable image API.
+
+Store the selected image locally in:
+
+/public/assets/hero-ocean.jpg
+
+If the image cannot be obtained, automatically fall back to a CSS ocean-gradient background so the application still works.
+
+The image should:
+- show realistic ocean water
+- feel calm but professional
+- leave negative space for text
+- fit the maritime intelligence theme
+- work in both light and dark mode
+
+Add:
+- cinematic gradient overlay
+- subtle parallax movement
+- slow image scale animation
+- smooth entrance animation
+- foreground glass UI elements
+
+--------------------------------------------------------
+LANDING ANIMATION
+--------------------------------------------------------
+
+Use:
+- Framer Motion
+- scroll reveal
+- parallax layers
+- smooth image movement
+- subtle floating particles
+- animated gradient
+- wave-like background movement
+
+Use IntersectionObserver or Framer Motion whileInView.
+
+Do not over-animate.
+
+Animations must be smooth on normal laptops.
+
+========================================================
+8. LANDING PAGE SECTIONS
+========================================================
+
+SECTION 1:
+Hero
+
+SECTION 2:
+"How MariFindX Works"
+
+Show:
+
+Satellite
+↓
+AI Detection
+↓
+Drift Analysis
+↓
+AIS Correlation
+↓
+Vessel Ranking
+
+SECTION 3:
+"Intelligence Layers"
+
+Cards:
+- Satellite Vision
+- Spill Geometry
+- Ocean Drift
+- AIS Intelligence
+- Explainable Ranking
+
+SECTION 4:
+"3D Investigation"
+
+Show preview of the 3D spill projection.
+
+SECTION 5:
+"Evidence, Not Guesswork"
+
+Show:
+- proximity
+- temporal overlap
+- trajectory consistency
+- drift consistency
+
+SECTION 6:
+CTA:
+"Open Investigation Dashboard"
+
+========================================================
+9. MAIN DASHBOARD
+========================================================
+
+Create a professional investigation dashboard.
+
+Top navigation:
+- MariFindX logo/name
+- Dashboard
+- Investigations
+- 3D Analysis
+- Vessels
+- Reports
+- Settings
+- Light/Dark switch
+- User/profile area
+
+Main dashboard should contain:
+
+1. Current Investigation
+2. Spill Detection
+3. Probable Origin
+4. Drift Analysis
+5. Vessel Candidates
+6. 3D Projection
+7. Evidence Timeline
+8. Investigation Summary
+
+========================================================
+10. 3D PROJECTION — CORE FEATURE
+========================================================
+
+This is the signature feature.
+
+Create a fully interactive 3D marine projection using:
+
+Three.js
+React Three Fiber
+Drei
+
+Do NOT create a fake static image.
+
+The 3D environment must be interactive.
+
+--------------------------------------------------------
+3D SCENE
+--------------------------------------------------------
+
+Create:
+
+- 3D ocean surface
+- subtle animated waves
+- realistic depth
+- coordinate grid
+- atmospheric lighting
+- origin marker
+- spill marker
+- spill polygon/region
+- drift trajectory
+- vessel paths
+- animated vessel markers
+- current-flow indicators
+- wind direction indicators
+- uncertainty zone
+
+Allow:
+- rotate
+- zoom
+- pan
+- reset camera
+- focus selected object
+
+Use smooth camera transitions.
+
+--------------------------------------------------------
+3D SPILL DRIFT
+--------------------------------------------------------
+
+Visualize:
+
+PROBABLE ORIGIN
+        ↓
+        ↓
+DRIFT PATH
+        ↓
+        ↓
+OBSERVED SPILL
+
+The movement must be animated over time.
+
+Represent oil movement using particles.
+
+Use a moderate number of particles for performance.
+
+Do NOT create thousands of expensive meshes.
+
+Use efficient particle rendering.
+
+--------------------------------------------------------
+3D PARTICLE SYSTEM
+--------------------------------------------------------
+
+Implement:
+
+- particle positions
+- drift direction
+- particle speed
+- age/lifetime
+- fade
+- trail
+- uncertainty spread
+
+The particles should move continuously according to mock drift data.
+
+========================================================
+11. REAL-TIME TIME-LAPSE
+========================================================
+
+Create a real-time interactive timeline.
+
+Controls:
+
+- Play
+- Pause
+- Restart
+- Previous time
+- Next time
+- Timeline scrubber
+- Speed selector:
+  0.25x
+  0.5x
+  1x
+  2x
+  4x
+
+Display:
+- current simulation time
+- release time
+- detection time
+- elapsed time
+- drift distance
+- drift speed
+
+The animation must remain synchronized across:
+
+- oil particles
+- spill position
+- vessels
+- vessel trajectories
+- current vectors
+- timeline
+
+When the user drags the timeline, ALL visual elements must update.
+
+========================================================
+12. VESSEL ANIMATION
+========================================================
+
+Display multiple AIS vessel paths.
+
+Each vessel should have:
+
+- trajectory
+- current position
+- movement direction
+- speed
+- vessel ID
+- correlation score
+
+Animate vessels according to timestamped trajectory data.
+
+The selected candidate vessel must be visually highlighted.
+
+Clicking a vessel should:
+
+1. Focus camera on vessel.
+2. Highlight its trajectory.
+3. Open vessel information.
+4. Display its correlation score.
+5. Display evidence.
+
+========================================================
+13. VESSEL DETAIL PANEL
+========================================================
+
+Show:
+
+Vessel Name
+MMSI
+Vessel Type
+Speed
+Heading
+Current Position
+Distance to Probable Origin
+Temporal Overlap
+Trajectory Match
+Drift Consistency
+Correlation Score
+Ranking
+
+Evidence:
+
+✓ Spatial proximity
+✓ Temporal overlap
+✓ Trajectory consistency
+✓ Drift consistency
+
+Do not claim legal responsibility.
+
+========================================================
+14. DRIFT ANALYSIS PANEL
+========================================================
+
+Show:
+
+Current Speed
+Current Direction
+Wind Speed
+Wind Direction
+Drift Speed
+Drift Direction
+Estimated Release Time
+Detection Time
+Estimated Origin
+Origin Confidence
+
+Include:
+
+- current vectors
+- wind arrows
+- drift vector
+- probability/origin zone
+
+========================================================
+15. PROBABLE ORIGIN
+========================================================
+
+Represent the origin as a probability zone.
+
+Do NOT only show one hardcoded point.
+
+Show:
+
+- origin center
+- uncertainty radius
+- probability intensity
+- estimated release window
+
+Example wording:
+
+"Probable Origin Zone"
+
+"Origin Confidence"
+
+Use demo values only where needed and label them clearly.
+
+========================================================
+16. 2D MAP
+========================================================
+
+Also provide a 2D map view using:
+
+Leaflet + OpenStreetMap
+
+Layers:
+- Spill
+- Probable Origin
+- AIS routes
+- Selected vessel
+- Other vessels
+- Current
+- Wind
+- Investigation area
+
+Add layer controls.
+
+Add 2D ↔ 3D toggle.
+
+When switching:
+- preserve investigation state
+- preserve selected vessel
+- preserve current timeline
+- animate camera transition where possible
+
+========================================================
+17. ANALYTICS
+========================================================
+
+Create clean analytical cards and charts.
+
+Charts:
+- vessel score comparison
+- drift speed over time
+- vessel speed over time
+- distance to origin over time
+- candidate ranking
+
+Use Recharts.
+
+Charts must react to the current theme.
+
+========================================================
+18. INVESTIGATION TIMELINE
+========================================================
+
+Create a chronological timeline:
+
+Release Window
+↓
+Vessel enters area
+↓
+Possible source zone crossing
+↓
+Spill drift
+↓
+Satellite observation
+↓
+Vessel exits region
+
+Make events animated as the time-lapse progresses.
+
+========================================================
+19. AI / ANALYTICS ARCHITECTURE
+========================================================
+
+Use structured mock data for the initial implementation.
+
+Architecture:
+
+Satellite
+↓
+Oil Spill Segmentation
+↓
+Spill Geometry
+↓
+Ocean + Wind
+↓
+Drift Model
+↓
+Origin Estimate
+↓
+AIS Trajectories
+↓
+Correlation Engine
+↓
+Vessel Ranking
+↓
+Dashboard
+
+Create clean service abstractions:
+
+/src/services/
+  satelliteService.js
+  driftService.js
+  aisService.js
+  correlationService.js
+  investigationService.js
+
+For now these services should use local mock datasets.
+
+Do not fake external API connectivity.
+
+========================================================
+20. DATA STRUCTURE
+========================================================
+
+Create realistic structured demo data:
+
+spill:
+- id
+- polygon
+- centroid
+- area
+- confidence
+- detectionTime
+
+origin:
+- latitude
+- longitude
+- uncertaintyRadius
+- probability
+- estimatedReleaseTime
+
+drift:
+- timestamp
+- latitude
+- longitude
+- speed
+- direction
+- currentSpeed
+- windSpeed
+
+vessels:
+- id
+- name
+- mmsi
+- type
+- trajectory
+- timestamps
+- speed
+- heading
+- correlationScore
+- rank
+- evidence
+
+Use deterministic data.
+
+Do not use random numbers that change every reload.
+
+========================================================
+21. LIQUID GLASS COMPONENT SYSTEM
+========================================================
+
+Create reusable components:
+
+GlassCard
+GlassButton
+GlassPanel
+GlassNavbar
+GlassModal
+GlassTooltip
+GlassStatCard
+GlassTabs
+GlassSlider
+GlassToggle
+GlassTable
+
+Use consistent:
+- backdrop blur
+- border opacity
+- shadow
+- highlight
+- hover
+- active
+- pressed states
+
+========================================================
+22. RESPONSIVE DESIGN
+========================================================
+
+Must work on:
+
+Desktop
+Laptop
+Tablet
+Mobile
+
+Mobile layout:
+
+- collapsible navigation
+- stacked panels
+- responsive 3D canvas
+- horizontal timeline scroll where needed
+- no horizontal overflow
+
+Do NOT use fixed widths that break small screens.
+
+========================================================
+23. REAL-TIME PARALLAX
+========================================================
+
+Implement real-time parallax on the landing page.
+
+Use multiple layers:
+
+Background ocean
+↓
+Ocean light layer
+↓
+Grid/particles
+↓
+Glass panels
+↓
+Foreground content
+
+Movement should respond subtly to:
+
+- mouse movement
+- device orientation where available
+- scroll position
+
+Limit movement for performance.
+
+Respect:
+
+prefers-reduced-motion
+
+========================================================
+24. SCROLL ANIMATIONS
+========================================================
+
+Add smooth:
+
+- fade in
+- slide up
+- scale
+- blur-to-clear
+- stagger animations
+
+Use Framer Motion.
+
+Do not animate every element.
+
+========================================================
+25. PERFORMANCE
+========================================================
+
+This project must run smoothly on a normal student laptop.
+
+Optimize:
+- Three.js rendering
+- particle count
+- texture sizes
+- animation loops
+- event listeners
+- resize observers
+- React re-renders
+
+Use:
+- useMemo
+- useCallback
+- React.memo
+- requestAnimationFrame
+where appropriate.
+
+Clean up all animation loops.
+
+No memory leaks.
+
+========================================================
+26. ERROR HANDLING
+========================================================
+
+This is mandatory.
+
+The application must NOT crash if:
+- image fails
+- map tiles fail
+- 3D WebGL is unavailable
+- data is empty
+- a vessel has missing fields
+- a visualization receives invalid data
+
+Add graceful fallbacks.
+
+For example:
+
+If WebGL is unavailable:
+show a clean 2D map/visualization fallback.
+
+If hero image fails:
+show a CSS ocean background.
+
+========================================================
+27. PROJECT STRUCTURE
+========================================================
+
+Use a clean architecture such as:
+
+src/
+  components/
+    ui/
+    glass/
+    landing/
+    dashboard/
+    map/
+    three/
+    vessels/
+    charts/
+
+  pages/
+    Landing.jsx
+    Dashboard.jsx
+    Investigation.jsx
+    Reports.jsx
+    Settings.jsx
+
+  services/
+    satelliteService.js
+    driftService.js
+    aisService.js
+    correlationService.js
+    investigationService.js
+
+  data/
+    mockInvestigation.js
+    mockVessels.js
+    mockDrift.js
+
+  hooks/
+  utils/
+  context/
+  styles/
+
+public/
+  assets/
+    hero-ocean.jpg
+
+========================================================
+28. LANDING IMAGE
+========================================================
+
+Use an actual high-quality ocean image.
+
+Preferred:
+- ocean from above
+- satellite-like ocean scene
+- subtle waves
+- no visible copyrighted logos
+- no text embedded in the image
+
+Download/use a royalty-free source and store it locally.
+
+Do not depend on an external image URL for the main hero.
+
+Add gradient overlay so text remains readable.
+
+========================================================
+29. PAGES
+========================================================
+
+Required:
+
+/
+Landing Page
+
+/dashboard
+Main intelligence dashboard
+
+/investigation
+Interactive investigation
+
+/3d-analysis
+Full-screen 3D projection
+
+/vessels
+Candidate vessel analysis
+
+/reports
+Investigation reports
+
+/settings
+Theme + application settings
+
+All routes must work.
+
+No broken routes.
+
+========================================================
+30. NAVIGATION
+========================================================
+
+Use a floating liquid-glass navbar.
+
+Items:
+
+MariFindX
+Home
+Dashboard
+Investigation
+3D Analysis
+Vessels
+Reports
+Settings
+
+Include:
+theme switch
+notification icon
+profile icon
+
+Mobile:
+hamburger menu
+
+========================================================
+31. 3D ANALYSIS PAGE
+========================================================
+
+Make this the main showcase page.
+
+Layout:
+
+LEFT:
+3D projection
+
+RIGHT:
+Investigation information
+
+BOTTOM:
+timeline
+
+TOP:
+controls
+
+Right panel:
+
+Spill
+Origin
+Drift
+Environment
+Vessels
+
+Bottom:
+
+Play / Pause / Timeline / Speed
+
+This page must feel like a professional maritime command interface.
+
+========================================================
+32. DEMO SCENARIO
+========================================================
+
+Create ONE realistic deterministic demonstration scenario.
+
+Example:
+
+- Potential oil spill in an ocean region
+- probable origin
+- several vessels
+- one high-ranked candidate
+- realistic vessel routes
+- current vector
+- wind vector
+- drift path
+- release window
+- satellite detection time
+
+Do not imply these are real-world confirmed events.
+
+Label:
+
+"Demo Investigation"
+
+========================================================
+33. ACCESSIBILITY
+========================================================
+
+Include:
+- keyboard accessible controls
+- visible focus states
+- readable contrast
+- aria labels
+- meaningful button text
+- reduced motion support
+
+========================================================
+34. FINAL QUALITY BAR
+========================================================
+
+The result must look like:
+
+A premium maritime intelligence platform.
+
+NOT:
+- a college template
+- a generic dashboard
+- a static mockup
+- a cyberpunk website
+- a collection of disconnected pages
+
+It should feel like one coherent product.
+
+========================================================
+35. TESTING
+========================================================
+
+Before finishing:
+
+Run:
+
+npm install
+npm run dev
+npm run build
+
+Fix EVERY build error.
+
+Check:
+- no console errors
+- all routes
+- light mode
+- dark mode
+- map
+- 3D
+- animation
+- parallax
+- timeline
+- vessel selection
+- responsive layout
+- hero image fallback
+- WebGL fallback
+
+Do not finish until the project builds successfully.
+
+========================================================
+36. FINAL RESPONSE
+========================================================
+
+After implementation, report:
+
+1. Project structure
+2. Packages installed
+3. Pages created
+4. 3D functionality implemented
+5. 2D map functionality
+6. Theme functionality
+7. Animation/parallax functionality
+8. Demo data structure
+9. Commands to run
+10. Any limitations
+
+Most importantly:
+
+MAKE THE PROJECT RUN FIRST.
+THEN POLISH IT.
+DO NOT SACRIFICE FUNCTIONALITY FOR VISUAL EFFECTS.
