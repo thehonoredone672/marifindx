@@ -26,97 +26,95 @@ export default function ThreeDAnalysis() {
 
   if (unreachable || (modelStatus && !modelStatus.checkpoint_present)) {
     return (
-      <div className="min-h-screen pt-20 bg-slate-950 flex items-center justify-center px-4">
-        <div className="max-w-lg rounded-lg border border-amber-500/40 bg-amber-500/10 p-8">
-          <div className="flex items-start gap-3 mb-3">
-            <AlertTriangle className="w-6 h-6 text-amber-400 shrink-0 mt-0.5" />
-            <h1 className="text-lg font-bold text-white">
+      <main className="min-h-screen pt-20 app-bg grid place-items-center px-4">
+        <div
+          className="max-w-lg rounded-lg border p-7"
+          style={{ background: 'var(--accent-soft)', borderColor: 'var(--accent-border)' }}
+        >
+          <div className="flex items-start gap-2.5 mb-3">
+            <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: 'var(--accent)' }} />
+            <h1 className="text-base font-semibold txt">
               {unreachable ? 'Backend unreachable' : 'Model checkpoint not found'}
             </h1>
           </div>
-          <p className="text-slate-300 text-sm mb-4">
+          <p className="txt-muted text-sm mb-3">
             {unreachable
               ? 'Start the API from the project root:'
               : 'Train a model before running the 3D analysis:'}
           </p>
-          <code className="block p-3 rounded bg-slate-950 text-emerald-300 font-mono text-sm">
+          <code className="cmd">
             {unreachable
               ? 'uvicorn backend.main:app --reload'
               : 'python -m ml.train --config config.yaml --mode quick'}
           </code>
         </div>
-      </div>
+      </main>
     )
   }
 
   if (!investigation) {
     return (
-      <div className="min-h-screen pt-20 bg-slate-950 flex items-center justify-center px-4">
+      <main className="min-h-screen pt-20 app-bg grid place-items-center px-4">
         <div className="text-center max-w-md">
-          <h1 className="text-2xl font-bold text-white mb-3">3D Analysis</h1>
-          <p className="text-slate-400 text-sm mb-6">
+          <h1 className="text-xl font-semibold tracking-tight txt mb-2">3D Analysis</h1>
+          <p className="txt-muted text-sm mb-6 leading-relaxed">
             Run an investigation to populate the 3D drift and vessel time-lapse.
             The scene renders the model's actual predicted spill polygon and the
             real drift particle simulation.
           </p>
-          <button
-            onClick={() => runDemo().catch(() => {})}
-            disabled={loading}
-            className="px-5 py-2.5 rounded-lg bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white font-semibold inline-flex items-center gap-2"
-          >
+          <button onClick={() => runDemo().catch(() => {})} disabled={loading} className="btn btn-accent">
             {loading
-              ? <><Loader2 className="w-4 h-4 animate-spin" /> Running pipeline…</>
-              : <><Play className="w-4 h-4" /> Run Demo Investigation</>}
+              ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Running pipeline…</>
+              : <><Play className="w-3.5 h-3.5" /> Run Demo Investigation</>}
           </button>
-          {error && <p className="mt-4 text-sm text-red-400">{error.message}</p>}
-          <p className="mt-6 text-xs text-slate-600">
-            Or open the <Link to="/investigation" className="text-amber-500 hover:underline">Investigation dashboard</Link>.
+          {error && <p className="mt-4 text-sm" style={{ color: 'var(--danger)' }}>{error.message}</p>}
+          <p className="mt-6 text-xs txt-faint">
+            Or open the{' '}
+            <Link to="/investigation" style={{ color: 'var(--accent)' }}>Investigation dashboard</Link>.
           </p>
         </div>
-      </div>
+      </main>
     )
   }
 
   return (
-    <div className="min-h-screen pt-16 bg-slate-950 flex flex-col">
-      <div className="flex-1 flex flex-col xl:flex-row min-h-[calc(100vh-64px)]">
-        {/* Scene */}
+    <main className="min-h-screen pt-14 app-bg flex flex-col">
+      <div className="flex-1 flex flex-col xl:flex-row min-h-[calc(100vh-56px)]">
         <div className="flex-1 relative min-h-[420px]">
           {viewMode === '3d'
             ? <SpillScene3D investigation={investigation} />
             : <SpillMap investigation={investigation} />}
 
-          <div className="absolute top-3 left-3 flex rounded-lg border border-slate-700 overflow-hidden z-[500]">
+          <div className="absolute top-3 left-3 seg z-[500]">
             {['2d', '3d'].map((m) => (
-              <button
-                key={m}
-                onClick={() => setViewMode(m)}
-                className={`px-3 py-1.5 text-xs font-semibold transition-colors ${
-                  viewMode === m ? 'bg-amber-600 text-white' : 'bg-slate-900/90 text-slate-300'
-                }`}
-              >
+              <button key={m} data-active={viewMode === m} onClick={() => setViewMode(m)}>
                 {m === '2d' ? '2D Map' : '3D Projection'}
               </button>
             ))}
           </div>
 
-          <div className="absolute bottom-3 left-3 rounded bg-slate-950/85 border border-slate-700 px-3 py-2 text-[11px] space-y-1 z-[500]">
+          <div
+            className="absolute bottom-3 left-3 rounded-lg border bd px-2.5 py-2 text-[11px] space-y-1 z-[500]"
+            style={{ background: 'var(--surface)' }}
+          >
             {[
-              ['#f59e0b', 'Detected spill'],
-              ['#7FE7D6', 'Probable origin / drift'],
+              ['var(--accent)', 'Detected spill'],
+              ['#0d9488', 'Probable origin / drift'],
               ['#fbbf24', 'Top candidate'],
-              ['#64748b', 'Other vessels'],
+              ['var(--text-faint)', 'Other vessels'],
             ].map(([c, l]) => (
-              <div key={l} className="flex items-center gap-2 text-slate-300">
-                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: c }} />
+              <div key={l} className="flex items-center gap-2 txt-muted">
+                <span className="w-2 h-2 rounded-full" style={{ background: c }} />
                 {l}
               </div>
             ))}
           </div>
         </div>
 
-        {/* Side panel */}
-        <aside className="w-full xl:w-[340px] border-l border-slate-800 bg-slate-900 overflow-y-auto max-h-[calc(100vh-64px)]">
+        <aside
+          className="w-full xl:w-[320px] border-t xl:border-t-0 xl:border-l bd overflow-y-auto max-h-[calc(100vh-56px)]"
+          style={{ background: 'var(--surface)' }}
+        >
           <Section title="Spill">
             <Row label="Area" value={geom.area_km2 ? `${geom.area_km2.toFixed(2)} km²` : '—'} />
             <Row label="Length × Width" value={geom.length_km ? `${geom.length_km.toFixed(1)} × ${geom.width_km.toFixed(1)} km` : '—'} />
@@ -140,36 +138,43 @@ export default function ThreeDAnalysis() {
           </Section>
 
           <Section title={`Vessels (${vessels.length})`}>
-            <div className="space-y-1.5">
-              {vessels.map((v) => (
-                <button
-                  key={v.id}
-                  onClick={() => setSelectedVessel(v.id)}
-                  className={`w-full text-left px-3 py-2 rounded border transition-colors ${
-                    v.id === selectedVesselId
-                      ? 'border-amber-500/50 bg-amber-500/10'
-                      : 'border-slate-800 bg-slate-950/40 hover:border-slate-600'
-                  }`}
-                >
-                  <div className="flex justify-between items-baseline gap-2">
-                    <span className={`text-sm font-semibold ${v.rank === 1 ? 'text-amber-400' : 'text-slate-200'}`}>
-                      #{v.rank} {v.name}
-                    </span>
-                    <span className="text-xs font-mono text-white">
-                      {v.correlation_score?.toFixed(3)}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
-                    {v.type} · {v.distance_km?.toFixed(2)} km from origin
-                  </p>
-                </button>
-              ))}
+            <div className="space-y-1">
+              {vessels.map((v) => {
+                const isSel = v.id === selectedVesselId
+                return (
+                  <button
+                    key={v.id}
+                    onClick={() => setSelectedVessel(v.id)}
+                    className="w-full text-left px-2.5 py-2 rounded-lg border transition-colors"
+                    style={{
+                      borderColor: isSel ? 'var(--accent-border)' : 'transparent',
+                      background: isSel ? 'var(--accent-soft)' : 'transparent',
+                    }}
+                  >
+                    <div className="flex justify-between items-baseline gap-2">
+                      <span
+                        className="text-[13px] font-medium"
+                        style={{ color: v.rank === 1 ? 'var(--accent)' : 'var(--text)' }}
+                      >
+                        #{v.rank} {v.name}
+                      </span>
+                      <span className="text-xs mono txt">{v.correlation_score?.toFixed(3)}</span>
+                    </div>
+                    <p className="text-[11px] txt-faint mt-0.5">
+                      {v.type} · {v.distance_km?.toFixed(2)} km from origin
+                    </p>
+                  </button>
+                )
+              })}
             </div>
           </Section>
 
           {investigation.ais?.meta?.synthetic && (
-            <div className="mx-4 mb-4 p-2.5 rounded border border-purple-500/30 bg-purple-500/10">
-              <p className="text-[11px] text-purple-300 leading-snug">
+            <div
+              className="mx-4 mb-4 p-2.5 rounded-lg border"
+              style={{ background: 'var(--info-soft)', borderColor: 'var(--info)' }}
+            >
+              <p className="text-[11px] leading-snug" style={{ color: 'var(--info)' }}>
                 {investigation.ais.meta.notice}
               </p>
             </div>
@@ -178,14 +183,14 @@ export default function ThreeDAnalysis() {
       </div>
 
       <TimelapseControls />
-    </div>
+    </main>
   )
 }
 
 function Section({ title, children }) {
   return (
-    <div className="px-4 py-4 border-b border-slate-800">
-      <p className="text-xs uppercase tracking-wider text-slate-500 mb-2.5">{title}</p>
+    <div className="px-4 py-4 border-b bd">
+      <p className="label-xs mb-2.5">{title}</p>
       {children}
     </div>
   )
@@ -193,9 +198,9 @@ function Section({ title, children }) {
 
 function Row({ label, value }) {
   return (
-    <div className="flex justify-between gap-3 text-sm py-0.5">
-      <span className="text-slate-400">{label}</span>
-      <span className="text-white font-mono text-[13px] text-right">{value}</span>
+    <div className="flex justify-between gap-3 text-[13px] py-0.5">
+      <span className="txt-muted">{label}</span>
+      <span className="txt mono text-xs text-right">{value}</span>
     </div>
   )
 }

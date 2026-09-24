@@ -68,7 +68,7 @@ export default function SpillMap({ investigation }) {
 
   if (!spillPositions.length && origin.lat === undefined) {
     return (
-      <div className="h-full flex items-center justify-center text-slate-500 text-sm">
+      <div className="h-full flex items-center justify-center txt-muted text-sm">
         No georeferenced geometry available for this scene.
       </div>
     )
@@ -79,7 +79,7 @@ export default function SpillMap({ investigation }) {
       <MapContainer
         center={center}
         zoom={10}
-        style={{ height: '100%', width: '100%', background: '#0f172a' }}
+        style={{ height: '100%', width: '100%', background: 'var(--surface-2)' }}
         scrollWheelZoom
       >
         <TileLayer
@@ -163,9 +163,12 @@ export default function SpillMap({ investigation }) {
         })}
       </MapContainer>
 
-      <div className="absolute bottom-3 right-3 z-[400] rounded bg-slate-950/85 border border-slate-700 px-3 py-2 text-[11px] space-y-1">
+      <div
+        className="absolute bottom-3 right-3 z-[400] rounded-lg border bd px-2.5 py-2 text-[11px] space-y-1"
+        style={{ background: 'var(--surface)' }}
+      >
         <Legend color="#f59e0b" label="Detected spill polygon" />
-        <Legend color="#7FE7D6" label="Probable origin / drift" />
+        <Legend color="#0d9488" label="Probable origin / drift" />
         <Legend color="#fbbf24" label="Top candidate vessel" />
         <Legend color="#64748b" label="Other vessels" />
       </div>
@@ -175,8 +178,8 @@ export default function SpillMap({ investigation }) {
 
 function Legend({ color, label }) {
   return (
-    <div className="flex items-center gap-2 text-slate-300">
-      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
+    <div className="flex items-center gap-2 txt-muted">
+      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
       {label}
     </div>
   )

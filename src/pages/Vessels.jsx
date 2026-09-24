@@ -11,6 +11,9 @@ const EVIDENCE_LABELS = {
   drift_consistency: 'Drift consistency',
 }
 
+const barColor = (v) =>
+  v > 0.7 ? 'var(--accent)' : v > 0.4 ? 'var(--info)' : 'var(--border-strong)'
+
 export default function Vessels() {
   const {
     investigation, loading, runDemo,
@@ -28,83 +31,77 @@ export default function Vessels() {
 
   if (!investigation) {
     return (
-      <div className="min-h-screen pt-20 bg-slate-950 flex items-center justify-center px-4">
+      <main className="min-h-screen pt-20 app-bg grid place-items-center px-4">
         <div className="text-center max-w-md">
-          <h1 className="text-2xl font-bold text-white mb-3">Vessel Analysis</h1>
-          <p className="text-slate-400 text-sm mb-6">
+          <h1 className="text-xl font-semibold tracking-tight txt mb-2">Vessel Analysis</h1>
+          <p className="txt-muted text-sm mb-6">
             {unreachable
               ? 'The backend is not reachable. Start it with: uvicorn backend.main:app --reload'
               : 'Run an investigation to load AIS candidates and their correlation evidence.'}
           </p>
           {!unreachable && (
-            <button
-              onClick={() => runDemo().catch(() => {})}
-              disabled={loading}
-              className="px-5 py-2.5 rounded-lg bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white font-semibold inline-flex items-center gap-2"
-            >
+            <button onClick={() => runDemo().catch(() => {})} disabled={loading} className="btn btn-accent">
               {loading
-                ? <><Loader2 className="w-4 h-4 animate-spin" /> Running…</>
-                : <><Play className="w-4 h-4" /> Run Demo Investigation</>}
+                ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Running…</>
+                : <><Play className="w-3.5 h-3.5" /> Run Demo Investigation</>}
             </button>
           )}
         </div>
-      </div>
+      </main>
     )
   }
 
   return (
-    <div className="min-h-screen pt-20 pb-12 bg-slate-950">
-      <div className="max-w-6xl mx-auto px-4">
-        <header className="mb-6">
-          <h1 className="text-2xl font-bold text-white">AIS Vessel Analysis</h1>
-          <p className="text-sm text-slate-400">
+    <main className="min-h-screen pt-20 pb-12 app-bg">
+      <div className="max-w-5xl mx-auto px-4">
+        <header className="mb-5">
+          <h1 className="text-xl font-semibold tracking-tight txt">AIS Vessel Analysis</h1>
+          <p className="text-sm txt-muted mt-0.5 flex items-center gap-2 flex-wrap">
             {vessels.length} candidates ranked by correlation score
-            {aisMeta.synthetic && (
-              <span className="ml-2 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-purple-500/20 text-purple-300">
-                {aisMeta.label}
-              </span>
-            )}
+            {aisMeta.synthetic && <span className="pill pill-info">{aisMeta.label}</span>}
           </p>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-4">
-          <aside className="rounded-lg border border-slate-800 bg-slate-900 overflow-hidden">
-            <div className="px-4 py-3 border-b border-slate-800">
-              <h2 className="font-semibold text-white text-sm">Candidates</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-4">
+          <aside className="panel overflow-hidden self-start">
+            <div className="panel-head">
+              <h2 className="font-semibold text-sm txt">Candidates</h2>
             </div>
-            <div className="p-2 space-y-1.5 max-h-[70vh] overflow-y-auto">
-              {vessels.map((v) => (
-                <button
-                  key={v.id}
-                  onClick={() => setSelectedVessel(v.id)}
-                  className={`w-full text-left px-3 py-2.5 rounded border transition-colors ${
-                    v.id === selected?.id
-                      ? 'border-amber-500/50 bg-amber-500/10'
-                      : 'border-slate-800 hover:border-slate-600'
-                  }`}
-                >
-                  <div className="flex justify-between items-baseline gap-2">
-                    <span className={`text-sm font-semibold ${
-                      v.rank === 1 ? 'text-amber-400' : 'text-slate-200'
-                    }`}>
-                      #{v.rank} {v.name}
-                    </span>
-                    <span className="text-xs font-mono text-white">
-                      {v.correlation_score?.toFixed(4)}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 mt-0.5">{v.type}</p>
-                  <div className="mt-1.5 h-1 rounded bg-slate-800 overflow-hidden">
-                    <div
-                      className="h-full rounded"
-                      style={{
-                        width: `${(v.correlation_score ?? 0) * 100}%`,
-                        backgroundColor: v.rank === 1 ? '#f59e0b' : '#3BA7F2',
-                      }}
-                    />
-                  </div>
-                </button>
-              ))}
+            <div className="p-2 space-y-1 max-h-[70vh] overflow-y-auto">
+              {vessels.map((v) => {
+                const isSel = v.id === selected?.id
+                return (
+                  <button
+                    key={v.id}
+                    onClick={() => setSelectedVessel(v.id)}
+                    className="w-full text-left px-3 py-2.5 rounded-lg border transition-colors"
+                    style={{
+                      borderColor: isSel ? 'var(--accent-border)' : 'transparent',
+                      background: isSel ? 'var(--accent-soft)' : 'transparent',
+                    }}
+                  >
+                    <div className="flex justify-between items-baseline gap-2">
+                      <span
+                        className="text-[13px] font-medium"
+                        style={{ color: v.rank === 1 ? 'var(--accent)' : 'var(--text)' }}
+                      >
+                        #{v.rank} {v.name}
+                      </span>
+                      <span className="text-xs mono txt">{v.correlation_score?.toFixed(4)}</span>
+                    </div>
+                    <p className="text-[11px] txt-faint mt-0.5">{v.type}</p>
+                    <div className="mt-1.5 h-1 rounded-full overflow-hidden" style={{ background: 'var(--border)' }}>
+                      <div
+                        className="h-full rounded-full"
+                        style={{
+                          width: `${(v.correlation_score ?? 0) * 100}%`,
+                          background: v.rank === 1 ? 'var(--accent)' : 'var(--info)',
+                        }}
+                      />
+                    </div>
+                  </button>
+                )
+              })}
             </div>
           </aside>
 
@@ -130,37 +127,31 @@ export default function Vessels() {
                   {Object.entries(selected.evidence ?? {}).map(([key, ev]) => (
                     <div key={key}>
                       <div className="flex justify-between items-baseline mb-1">
-                        <span className="text-sm text-slate-300">
-                          {EVIDENCE_LABELS[key] ?? key}
-                        </span>
-                        <span className="text-sm font-mono font-bold text-white">
+                        <span className="text-[13px] txt-muted">{EVIDENCE_LABELS[key] ?? key}</span>
+                        <span className="text-[13px] mono font-semibold txt">
                           {((ev.value ?? 0) * 100).toFixed(0)}%
                         </span>
                       </div>
-                      <div className="h-1.5 rounded bg-slate-800 overflow-hidden mb-1">
+                      <div className="h-1 rounded-full overflow-hidden mb-1" style={{ background: 'var(--border)' }}>
                         <div
-                          className="h-full rounded"
-                          style={{
-                            width: `${(ev.value ?? 0) * 100}%`,
-                            backgroundColor:
-                              ev.value > 0.7 ? '#f59e0b'
-                                : ev.value > 0.4 ? '#3BA7F2' : '#475569',
-                          }}
+                          className="h-full rounded-full"
+                          style={{ width: `${(ev.value ?? 0) * 100}%`, background: barColor(ev.value ?? 0) }}
                         />
                       </div>
-                      <p className="text-[11px] text-slate-500">{ev.detail}</p>
+                      <p className="text-[11px] txt-faint">{ev.detail}</p>
                     </div>
                   ))}
                 </div>
               </Panel>
 
-              <p className="text-[11px] text-slate-500 leading-relaxed">
+              <p className="text-[11px] txt-faint leading-relaxed">
                 {investigation.ranking?.disclaimer}
               </p>
 
               <Link
                 to="/3d-analysis"
-                className="inline-block text-sm text-amber-500 hover:text-amber-400 font-semibold"
+                className="inline-block text-[13px] font-medium"
+                style={{ color: 'var(--accent)' }}
               >
                 View in 3D time-lapse →
               </Link>
@@ -168,15 +159,15 @@ export default function Vessels() {
           )}
         </div>
       </div>
-    </div>
+    </main>
   )
 }
 
 function Panel({ title, children }) {
   return (
-    <section className="rounded-lg border border-slate-800 bg-slate-900 overflow-hidden">
-      <div className="px-4 py-3 border-b border-slate-800">
-        <h2 className="font-semibold text-white text-sm">{title}</h2>
+    <section className="panel overflow-hidden">
+      <div className="panel-head">
+        <h2 className="font-semibold text-sm txt">{title}</h2>
       </div>
       <div className="p-4">{children}</div>
     </section>
@@ -185,9 +176,9 @@ function Panel({ title, children }) {
 
 function Row({ label, value }) {
   return (
-    <div className="flex justify-between gap-3 text-sm">
-      <span className="text-slate-400">{label}</span>
-      <span className="text-white font-mono text-[13px]">{value ?? '—'}</span>
+    <div className="flex justify-between gap-3 text-[13px]">
+      <span className="txt-muted">{label}</span>
+      <span className="txt mono text-xs">{value ?? '—'}</span>
     </div>
   )
 }

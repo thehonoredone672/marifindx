@@ -1,10 +1,13 @@
-# Development
-npm run dev          # Start dev server (http://localhost:5173)
+# Terminal 1 — backend
+cd D:\marifindx
+py -m uvicorn backend.main:app --reload
 
-# Build
-npm run build        # Production build
-npm run preview      # Preview production build locally
-
-# Recommended: Full setup
-npm install
+# Terminal 2 — frontend
+cd D:\marifindx
 npm run dev
+
+
+Command-line, without the UI:
+py -m ml.inference --image data\demo\demo_scene.tif   # detection → GeoJSON
+py -m ml.test                                          # held-out metrics
+py -m ml.train --mode quick --encoder plain --patch-size 256 --batch-size 4   # retrain (~8 min)

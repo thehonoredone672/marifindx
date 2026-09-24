@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
 import { AlertTriangle, Play, Loader2, Upload, Box, Map as MapIcon } from 'lucide-react'
 import useInvestigationStore from '../context/investigationStore'
 import SpillMap from '../components/map/SpillMap'
@@ -7,6 +6,7 @@ import SpillScene3D from '../components/three/SpillScene3D'
 import TimelapseControls from '../components/three/TimelapseControls'
 import DetectionPanel from '../components/investigation/DetectionPanel'
 import VesselTable from '../components/investigation/VesselTable'
+import OilPredictionTimelapse from '../components/investigation/OilPredictionTimelapse'
 
 export default function Investigation() {
   const {
@@ -26,24 +26,25 @@ export default function Investigation() {
     if (file) uploadScene(file).catch(() => {})
   }
 
-  // ---- Backend unreachable -----------------------------------------
   if (backendDown) {
     return (
       <Notice
-        tone="red"
+        tone="danger"
         title="Backend unreachable"
         body="The MariFindX API is not responding. Start it from the project root:"
         command="uvicorn backend.main:app --reload"
-        onRetry={() => { setBackendDown(false); checkModel().catch(() => setBackendDown(true)) }}
+        onRetry={() => {
+          setBackendDown(false)
+          checkModel().catch(() => setBackendDown(true))
+        }}
       />
     )
   }
 
-  // ---- Model checkpoint missing ------------------------------------
   if (modelStatus && !modelStatus.checkpoint_present) {
     return (
       <Notice
-        tone="amber"
+        tone="accent"
         title="Model checkpoint not found"
         body="No trained model is available, so no detection can be produced. Train one first:"
         command="python -m ml.train --config config.yaml --mode quick"
@@ -53,93 +54,79 @@ export default function Investigation() {
   }
 
   return (
-    <div className="min-h-screen pt-20 pb-12 bg-slate-950">
+    <main className="min-h-screen pt-20 pb-12 app-bg">
       <div className="max-w-[1600px] mx-auto px-4">
-        <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
+        <header className="mb-5 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white">Investigation</h1>
-            <p className="text-sm text-slate-400">
+            <h1 className="text-xl font-semibold tracking-tight txt">Investigation</h1>
+            <p className="text-sm txt-muted mt-0.5">
               Sentinel-1 segmentation, drift reconstruction and AIS correlation
             </p>
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => runDemo().catch(() => {})}
-              disabled={loading}
-              className="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white text-sm font-semibold flex items-center gap-2 transition-colors"
-            >
+            <button onClick={() => runDemo().catch(() => {})} disabled={loading} className="btn btn-accent">
               {loading
-                ? <Loader2 className="w-4 h-4 animate-spin" />
-                : <Play className="w-4 h-4" />}
-              {loading ? 'Running pipeline…' : 'Run Demo Investigation'}
+                ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Running pipeline…</>
+                : <><Play className="w-3.5 h-3.5" /> Run Demo Investigation</>}
             </button>
 
-            <label className="px-4 py-2 rounded-lg border border-slate-700 hover:border-slate-500 text-slate-200 text-sm font-semibold flex items-center gap-2 cursor-pointer transition-colors">
-              <Upload className="w-4 h-4" />
-              Upload SAR scene
+            <label className="btn btn-quiet cursor-pointer">
+              <Upload className="w-3.5 h-3.5" />
+              Upload scene
               <input type="file" accept=".tif,.tiff" onChange={handleUpload} className="hidden" />
             </label>
           </div>
         </header>
 
         {error && (
-          <div className="mb-6 p-4 rounded-lg border border-red-500/40 bg-red-500/10 flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="text-red-200 font-semibold">{error.message}</p>
-              {error.detail?.command && (
-                <code className="mt-2 block text-xs text-red-300/80 font-mono">
-                  {error.detail.command}
-                </code>
-              )}
+          <div
+            className="mb-5 p-3.5 rounded-lg border flex items-start gap-3"
+            style={{ background: 'var(--danger-soft)', borderColor: 'var(--danger)' }}
+          >
+            <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" style={{ color: 'var(--danger)' }} />
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-sm" style={{ color: 'var(--danger)' }}>{error.message}</p>
+              {error.detail?.command && <code className="cmd mt-2">{error.detail.command}</code>}
             </div>
-            <button onClick={clearError} className="text-red-300 hover:text-red-100 text-sm">
-              Dismiss
-            </button>
+            <button onClick={clearError} className="text-xs txt-muted hover:underline">Dismiss</button>
           </div>
         )}
 
         {!investigation && !loading && (
-          <div className="rounded-lg border border-slate-800 bg-slate-900 p-16 text-center">
-            <p className="text-slate-300 mb-2 text-lg">No active investigation</p>
-            <p className="text-slate-500 text-sm">
-              Run the demo to execute the trained model on the bundled Sentinel-1-format
-              scene, or upload your own GeoTIFF.
+          <div className="panel p-14 text-center">
+            <p className="txt font-medium mb-1">No active investigation</p>
+            <p className="txt-muted text-sm max-w-md mx-auto">
+              Run the demo to execute the trained model on the bundled
+              Sentinel-1-format scene, or upload your own GeoTIFF.
             </p>
           </div>
         )}
 
-        {investigation && investigation.status === 'no_detection' && (
-          <div className="rounded-lg border border-slate-700 bg-slate-900 p-8 text-center">
-            <p className="text-slate-200 font-semibold mb-2">No spill detected</p>
-            <p className="text-slate-400 text-sm">{investigation.message}</p>
+        {investigation?.status === 'no_detection' && (
+          <div className="panel p-8 text-center">
+            <p className="txt font-medium mb-1">No spill detected</p>
+            <p className="txt-muted text-sm">{investigation.message}</p>
           </div>
         )}
 
-        {investigation && investigation.status === 'complete' && (
+        {investigation?.status === 'complete' && (
           <>
-            <div className="grid grid-cols-1 xl:grid-cols-[380px_1fr] gap-4 mb-4">
+            <div className="grid grid-cols-1 xl:grid-cols-[360px_1fr] gap-4 mb-4">
               <DetectionPanel investigation={investigation} />
 
-              <section className="rounded-lg border border-slate-800 bg-slate-900 overflow-hidden flex flex-col">
-                <div className="px-4 py-3 border-b border-slate-800 flex items-center justify-between">
-                  <h2 className="font-semibold text-white">
+              <section className="panel overflow-hidden flex flex-col">
+                <div className="panel-head">
+                  <h2 className="font-semibold text-sm txt">
                     {viewMode === '3d' ? '3D Drift & Vessel Time-Lapse' : 'Map'}
                   </h2>
-                  <div className="flex rounded-lg border border-slate-700 overflow-hidden">
-                    <ToggleBtn
-                      active={viewMode === '2d'}
-                      onClick={() => setViewMode('2d')}
-                      icon={MapIcon}
-                      label="2D Map"
-                    />
-                    <ToggleBtn
-                      active={viewMode === '3d'}
-                      onClick={() => setViewMode('3d')}
-                      icon={Box}
-                      label="3D"
-                    />
+                  <div className="seg">
+                    <button data-active={viewMode === '2d'} onClick={() => setViewMode('2d')}>
+                      <MapIcon className="w-3 h-3 inline mr-1" />2D Map
+                    </button>
+                    <button data-active={viewMode === '3d'} onClick={() => setViewMode('3d')}>
+                      <Box className="w-3 h-3 inline mr-1" />3D
+                    </button>
                   </div>
                 </div>
 
@@ -154,56 +141,34 @@ export default function Investigation() {
             </div>
 
             <VesselTable investigation={investigation} />
+
+            <OilPredictionTimelapse investigation={investigation} />
           </>
         )}
       </div>
-    </div>
-  )
-}
-
-function ToggleBtn({ active, onClick, icon: Icon, label }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`px-3 py-1.5 text-xs font-semibold flex items-center gap-1.5 transition-colors ${
-        active ? 'bg-amber-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-      }`}
-    >
-      <Icon className="w-3.5 h-3.5" />
-      {label}
-    </button>
+    </main>
   )
 }
 
 function Notice({ tone, title, body, command, footnote, onRetry }) {
-  const accent = tone === 'red'
-    ? 'border-red-500/40 bg-red-500/10 text-red-300'
-    : 'border-amber-500/40 bg-amber-500/10 text-amber-300'
+  const color = tone === 'danger' ? 'var(--danger)' : 'var(--accent)'
+  const bg = tone === 'danger' ? 'var(--danger-soft)' : 'var(--accent-soft)'
   return (
-    <div className="min-h-screen pt-20 pb-12 bg-slate-950">
+    <main className="min-h-screen pt-20 pb-12 app-bg">
       <div className="max-w-2xl mx-auto px-4">
-        <div className={`rounded-lg border p-8 ${accent}`}>
-          <div className="flex items-start gap-3 mb-4">
-            <AlertTriangle className="w-6 h-6 shrink-0 mt-0.5" />
-            <h1 className="text-xl font-bold text-white">{title}</h1>
+        <div className="rounded-lg border p-7" style={{ background: bg, borderColor: color }}>
+          <div className="flex items-start gap-2.5 mb-3">
+            <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" style={{ color }} />
+            <h1 className="text-base font-semibold txt">{title}</h1>
           </div>
-          <p className="text-slate-300 mb-4">{body}</p>
-          {command && (
-            <code className="block p-3 rounded bg-slate-950 text-emerald-300 font-mono text-sm mb-4 overflow-x-auto">
-              {command}
-            </code>
-          )}
-          {footnote && <p className="text-slate-400 text-sm">{footnote}</p>}
+          <p className="txt-muted text-sm mb-3">{body}</p>
+          {command && <code className="cmd mb-3">{command}</code>}
+          {footnote && <p className="txt-faint text-xs">{footnote}</p>}
           {onRetry && (
-            <button
-              onClick={onRetry}
-              className="mt-4 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-sm font-semibold"
-            >
-              Retry
-            </button>
+            <button onClick={onRetry} className="btn btn-quiet mt-4">Retry</button>
           )}
         </div>
       </div>
-    </div>
+    </main>
   )
 }

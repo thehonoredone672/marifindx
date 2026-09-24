@@ -24,9 +24,9 @@ export default function TimelapseControls() {
   const endMs = sim.end_time ? new Date(sim.end_time).getTime() : null
   const durationMin = startMs && endMs ? Math.max(1, (endMs - startMs) / 60000) : 0
 
-  // Advance the clock in wall-clock-proportional steps. One real second
-  // maps to one simulated minute at 1x, so a 7-hour window plays in ~7 min
-  // at 1x and ~1.75 min at 4x.
+  const simulationTimeRef = useRef(simulationTime)
+  useEffect(() => { simulationTimeRef.current = simulationTime }, [simulationTime])
+
   useEffect(() => {
     if (!isPlaying || !durationMin) return undefined
 
@@ -52,10 +52,6 @@ export default function TimelapseControls() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPlaying, playbackSpeed, durationMin, setSimulationTime, setIsPlaying])
 
-  // Mirror the time into a ref so the rAF loop reads it without re-subscribing.
-  const simulationTimeRef = useRef(simulationTime)
-  useEffect(() => { simulationTimeRef.current = simulationTime }, [simulationTime])
-
   const currentDate = useMemo(
     () => (startMs ? new Date(startMs + simulationTime * 60000) : null),
     [startMs, simulationTime],
@@ -65,10 +61,10 @@ export default function TimelapseControls() {
     if (!investigation || !startMs || !durationMin) return []
     const rw = investigation.origin?.release_window ?? {}
     const raw = [
-      { label: 'Release window opens', time: rw.start, color: '#7FE7D6' },
-      { label: 'Estimated release', time: rw.centre, color: '#fbbf24' },
-      { label: 'Release window closes', time: rw.end, color: '#7FE7D6' },
-      { label: 'Satellite detection', time: investigation.detection_time, color: '#f59e0b' },
+      { label: 'Release window opens', time: rw.start, color: 'var(--info)' },
+      { label: 'Estimated release', time: rw.centre, color: 'var(--accent)' },
+      { label: 'Release window closes', time: rw.end, color: 'var(--info)' },
+      { label: 'Satellite detection', time: investigation.detection_time, color: 'var(--accent)' },
     ]
     const top = investigation.ranking?.vessels?.[0]
     const zone = top?.evidence?.origin_zone
@@ -77,15 +73,12 @@ export default function TimelapseControls() {
       raw.push({
         label: `${top.name} crosses origin zone`,
         time: mid.time,
-        color: '#3BA7F2',
+        color: 'var(--info)',
       })
     }
     return raw
       .filter((e) => e.time)
-      .map((e) => ({
-        ...e,
-        minutes: (new Date(e.time).getTime() - startMs) / 60000,
-      }))
+      .map((e) => ({ ...e, minutes: (new Date(e.time).getTime() - startMs) / 60000 }))
       .filter((e) => e.minutes >= -1 && e.minutes <= durationMin + 1)
       .sort((a, b) => a.minutes - b.minutes)
   }, [investigation, startMs, durationMin])
@@ -99,39 +92,45 @@ export default function TimelapseControls() {
   const activeEvent = events.find((e) => Math.abs(e.minutes - simulationTime) < 12)
 
   return (
-    <div className="border-t border-slate-800 bg-slate-950/60 px-4 py-3">
+    <div className="border-t bd surface-2 px-4 py-3">
       <div className="flex items-center gap-3 flex-wrap">
         <div className="flex items-center gap-1">
-          <IconBtn onClick={() => { setSimulationTime(0); setIsPlaying(false) }} title="Restart">
-            <RotateCcw className="w-4 h-4" />
-          </IconBtn>
-          <IconBtn onClick={() => step(-STEP_MINUTES)} title="Step back 15 min">
-            <ChevronLeft className="w-4 h-4" />
-          </IconBtn>
+          <button
+            onClick={() => { setSimulationTime(0); setIsPlaying(false) }}
+            className="btn-icon"
+            title="Restart"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+          </button>
+          <button onClick={() => step(-STEP_MINUTES)} className="btn-icon" title="Step back 15 min">
+            <ChevronLeft className="w-3.5 h-3.5" />
+          </button>
           <button
             onClick={() => setIsPlaying(!isPlaying)}
-            className="p-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white transition-colors"
+            className="btn btn-accent"
+            style={{ padding: '0.4rem 0.6rem' }}
             title={isPlaying ? 'Pause' : 'Play'}
           >
-            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+            {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
           </button>
-          <IconBtn onClick={() => step(STEP_MINUTES)} title="Step forward 15 min">
-            <ChevronRight className="w-4 h-4" />
-          </IconBtn>
+          <button onClick={() => step(STEP_MINUTES)} className="btn-icon" title="Step forward 15 min">
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
         </div>
 
         <div className="flex-1 min-w-[220px]">
           <div className="relative">
-            {/* Event markers */}
             <div className="absolute inset-x-0 -top-2 h-2 pointer-events-none">
               {events.map((e, i) => (
                 <span
                   key={i}
-                  className="absolute w-1 h-2 rounded-sm"
+                  className="absolute rounded-sm"
                   style={{
                     left: `${Math.max(0, Math.min(100, (e.minutes / durationMin) * 100))}%`,
-                    backgroundColor: e.color,
-                    opacity: simulationTime >= e.minutes ? 1 : 0.35,
+                    width: 2,
+                    height: 8,
+                    background: e.color,
+                    opacity: simulationTime >= e.minutes ? 1 : 0.3,
                   }}
                   title={e.label}
                 />
@@ -144,36 +143,28 @@ export default function TimelapseControls() {
               step={0.5}
               value={simulationTime}
               onChange={(e) => setSimulationTime(parseFloat(e.target.value))}
-              className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-amber-500"
+              className="w-full"
               style={{
-                background: `linear-gradient(to right, #f59e0b 0%, #f59e0b ${pct}%, #1e293b ${pct}%, #1e293b 100%)`,
+                background: `linear-gradient(to right, var(--accent) 0%, var(--accent) ${pct}%, var(--border) ${pct}%, var(--border) 100%)`,
               }}
               aria-label="Simulation timeline"
             />
           </div>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="seg">
           {SPEEDS.map((s) => (
-            <button
-              key={s}
-              onClick={() => setPlaybackSpeed(s)}
-              className={`px-2 py-1 rounded text-[11px] font-semibold transition-colors ${
-                playbackSpeed === s
-                  ? 'bg-amber-600 text-white'
-                  : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-              }`}
-            >
+            <button key={s} data-active={playbackSpeed === s} onClick={() => setPlaybackSpeed(s)}>
               {s}×
             </button>
           ))}
         </div>
       </div>
 
-      <div className="mt-2 flex items-center justify-between gap-4 text-[11px] text-slate-500 flex-wrap">
-        <span className="font-mono">
+      <div className="mt-2 flex items-center justify-between gap-4 text-[11px] txt-faint flex-wrap">
+        <span className="mono">
           {currentDate ? currentDate.toISOString().slice(0, 16).replace('T', ' ') : '—'} UTC
-          <span className="text-slate-600"> · T+{simulationTime.toFixed(0)}m / {durationMin.toFixed(0)}m</span>
+          <span className="ml-1">· T+{simulationTime.toFixed(0)}m / {durationMin.toFixed(0)}m</span>
         </span>
         {activeEvent && (
           <span className="font-semibold" style={{ color: activeEvent.color }}>
@@ -186,17 +177,5 @@ export default function TimelapseControls() {
         </span>
       </div>
     </div>
-  )
-}
-
-function IconBtn({ children, onClick, title }) {
-  return (
-    <button
-      onClick={onClick}
-      title={title}
-      className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
-    >
-      {children}
-    </button>
   )
 }
