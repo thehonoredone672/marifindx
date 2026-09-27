@@ -66,6 +66,43 @@ def _equal_area_crs_for(lon: float, lat: float):
         )
 
 
+_WGS84_A = 6378137.0
+_WGS84_E2 = 6.69437999014e-3
+_GEOGRAPHIC_WGS84 = {"EPSG:4326", "OGC:CRS84", "WGS84"}
+
+
+def _local_metric_projection(lon0: float, lat0: float):
+    """Equirectangular metres about (lon0, lat0) on the WGS84 ellipsoid.
+
+    Fallback when pyproj cannot load. Uses the local meridional and
+    prime-vertical radii, so distortion stays well under 0.1% across the
+    tens of kilometres a spill spans -- adequate for area/axis metrics,
+    not for scene-wide geodesy.
+    """
+    phi = math.radians(lat0)
+    w = math.sqrt(1.0 - _WGS84_E2 * math.sin(phi) ** 2)
+    m_per_rad_lat = _WGS84_A * (1.0 - _WGS84_E2) / w**3
+    m_per_rad_lon = _WGS84_A * math.cos(phi) / w
+
+    def fwd(x, y, z=None):
+        x = np.radians(np.asarray(x) - lon0) * m_per_rad_lon
+        y = np.radians(np.asarray(y) - lat0) * m_per_rad_lat
+        return x, y
+
+    return fwd
+
+
+def _metric_forward(crs, lon0: float, lat0: float):
+    """(forward transform to metres, label) for the scene CRS, or None."""
+    if HAS_PYPROJ:
+        src = CRS.from_user_input(str(crs))
+        metric = _equal_area_crs_for(lon0, lat0)
+        return Transformer.from_crs(src, metric, always_xy=True).transform, metric.to_string()
+    if str(crs).upper() in _GEOGRAPHIC_WGS84:
+        return _local_metric_projection(lon0, lat0), "local equirectangular (WGS84)"
+    return None
+
+
 def extract_regions(
     mask: np.ndarray, probability: np.ndarray | None = None, min_pixels: int = 0
 ) -> list[dict[str, Any]]:
@@ -170,20 +207,25 @@ def geometry_from_region(
     if "probability" in region:
         out["probability"] = region["probability"]
 
-    if georeferenced and HAS_SHAPELY and HAS_PYPROJ and len(coords) >= 4:
+    projection = None
+    if georeferenced and HAS_SHAPELY and len(coords) >= 4:
         try:
+            projection = _metric_forward(crs, centroid[0], centroid[1])
+        except Exception as exc:
+            out["geometry_error"] = str(exc)
+
+    if projection is not None:
+        try:
+            fwd, metric_name = projection
             poly = Polygon(coords)
             if not poly.is_valid:
                 poly = poly.buffer(0)
-            src = CRS.from_user_input(str(crs))
-            metric = _equal_area_crs_for(centroid[0], centroid[1])
-            fwd = Transformer.from_crs(src, metric, always_xy=True).transform
             projected = shapely_transform(fwd, poly)
 
             area_m2 = float(abs(projected.area))
             out["area_km2"] = area_m2 / 1e6
             out["perimeter_km"] = float(projected.length) / 1000.0
-            out["projected_crs"] = metric.to_string()
+            out["projected_crs"] = metric_name
 
             rect = projected.minimum_rotated_rectangle
             rx, ry = rect.exterior.coords.xy

@@ -26,9 +26,10 @@ def read_sar_image(path: str | Path) -> tuple[np.ndarray, dict[str, Any]]:
     """Read a SAR GeoTIFF.
 
     Returns (array[H, W, C] float32 in dB, georeference metadata).
-    Falls back to tifffile when rasterio cannot open the file, in which
-    case the georeference dict is empty and downstream code will report
-    pixel coordinates instead of lat/lon.
+    Falls back to tifffile when rasterio cannot open the file, rebuilding
+    the transform/CRS from the raw GeoTIFF tags. If those tags are absent
+    or unsupported the scene is marked not georeferenced and downstream
+    code reports pixel coordinates instead of lat/lon.
     """
     path = Path(path)
     if HAS_RASTERIO:
@@ -51,7 +52,80 @@ def read_sar_image(path: str | Path) -> tuple[np.ndarray, dict[str, Any]]:
     arr = tifffile.imread(str(path)).astype(np.float32)
     if arr.ndim == 2:
         arr = arr[..., None]
-    return arr, {"georeferenced": False, "height": arr.shape[0], "width": arr.shape[1]}
+    geo: dict[str, Any] = {
+        "georeferenced": False,
+        "height": arr.shape[0],
+        "width": arr.shape[1],
+        "count": arr.shape[2],
+    }
+    transform, crs = _georef_from_tiff_tags(path)
+    if transform is not None and crs is not None:
+        geo.update({"transform": transform, "crs": crs, "georeferenced": True})
+    return arr, geo
+
+
+# GeoTIFF tag / GeoKey ids (GeoTIFF 1.0 spec).
+_TAG_PIXEL_SCALE = 33550
+_TAG_TIEPOINT = 33922
+_TAG_TRANSFORMATION = 34264
+_TAG_GEOKEY_DIRECTORY = 34735
+_KEY_RASTER_TYPE = 1025
+_KEY_GEOGRAPHIC_TYPE = 2048
+_KEY_PROJECTED_TYPE = 3072
+_RASTER_PIXEL_IS_POINT = 2
+_USER_DEFINED = 32767
+
+
+def _georef_from_tiff_tags(path: Path) -> tuple[Any, str | None]:
+    """Rebuild (Affine transform, "EPSG:xxxx") from raw GeoTIFF tags.
+
+    Used when rasterio's GDAL binaries cannot load (e.g. blocked by a
+    Windows Application Control policy). Covers north-up scale+tiepoint
+    and full ModelTransformation rasters with an EPSG-coded CRS; anything
+    else returns (None, None) and the scene stays in pixel space.
+    """
+    try:
+        from affine import Affine
+
+        with tifffile.TiffFile(str(path)) as tif:
+            tags = tif.pages[0].tags
+
+            def tag(tid):
+                t = tags.get(tid)
+                return tuple(t.value) if t is not None else None
+
+            keys: dict[int, int] = {}
+            directory = tag(_TAG_GEOKEY_DIRECTORY)
+            if directory:
+                for i in range(4, 4 + 4 * directory[3], 4):
+                    key_id, location, _count, value = directory[i:i + 4]
+                    if location == 0:  # value stored inline
+                        keys[key_id] = value
+
+            epsg = keys.get(_KEY_PROJECTED_TYPE) or keys.get(_KEY_GEOGRAPHIC_TYPE)
+            if not epsg or epsg == _USER_DEFINED:
+                return None, None
+
+            matrix = tag(_TAG_TRANSFORMATION)
+            scale = tag(_TAG_PIXEL_SCALE)
+            tiepoint = tag(_TAG_TIEPOINT)
+            if matrix and len(matrix) == 16:
+                transform = Affine(matrix[0], matrix[1], matrix[3],
+                                   matrix[4], matrix[5], matrix[7])
+            elif scale and tiepoint and len(tiepoint) >= 6:
+                i, j, _k, x, y, _z = tiepoint[:6]
+                sx, sy = scale[0], scale[1]
+                transform = Affine(sx, 0.0, x - i * sx, 0.0, -sy, y + j * sy)
+            else:
+                return None, None
+
+            # PixelIsPoint tiepoints refer to pixel centres; shift to corner
+            # so the transform matches rasterio's PixelIsArea convention.
+            if keys.get(_KEY_RASTER_TYPE) == _RASTER_PIXEL_IS_POINT:
+                transform = transform * Affine.translation(-0.5, -0.5)
+            return transform, f"EPSG:{epsg}"
+    except Exception:
+        return None, None
 
 
 def read_mask(path: str | Path) -> np.ndarray:
