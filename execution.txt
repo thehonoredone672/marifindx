@@ -1,13 +1,30 @@
-# Terminal 1 — backend
+Terminal 1 — backend
+
+
 cd D:\marifindx
 py -m uvicorn backend.main:app --reload
+Terminal 2 — frontend
 
-# Terminal 2 — frontend
+
 cd D:\marifindx
 npm run dev
+The browser should open http://localhost:5173 by itself. Press Ctrl+C in each terminal to stop.
 
+Quick checks
 
-Command-line, without the UI:
-py -m ml.inference --image data\demo\demo_scene.tif   # detection → GeoJSON
-py -m ml.test                                          # held-out metrics
-py -m ml.train --mode quick --encoder plain --patch-size 256 --batch-size 4   # retrain (~8 min)
+curl.exe http://127.0.0.1:8000/api/health
+curl.exe http://127.0.0.1:8000/api/model/status
+curl.exe -X POST http://127.0.0.1:8000/api/investigation/demo -H "Content-Type: application/json" -d "{}"
+Without the UI (ML pipeline)
+
+py -m ml.inference --image data\demo\demo_scene.tif      # detect a spill -> GeoJSON + preview in results\
+py -m ml.validate --config config.yaml                    # accuracy on the validation data
+py -m ml.test --config config.yaml                        # accuracy on the held-out test set -> results\metrics.json
+Only if you need to rebuild things
+
+py -m pip install -r requirements.txt                     # Python dependencies (new machine)
+npm install                                               # frontend dependencies (new machine)
+py scripts\make_demo_data.py                              # recreate the synthetic demo data
+py -m ml.train --mode quick --encoder plain --patch-size 256 --batch-size 4   # retrain the model (~8 min on CPU)
+py data\generate_synthetic_ais.py --lat 19.26 --lon 71.80 # new synthetic vessel-tracking (AIS) data file
+npm run build                                             # production build of the frontend -> dist\
